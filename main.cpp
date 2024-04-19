@@ -11,9 +11,11 @@ enum class EquipmentType {
     BOOTS
 };
 
-const string ANSI_COLOR_RED = "\033[31m";
-const string ANSI_COLOR_GREEN = "\033[32m";
-const string ANSI_COLOR_YELLOW = "\033[33m";
+const string BLACK = "\033[30m";
+const string RED = "\033[31m";
+const string GREEN = "\033[32m";
+const string YELLOW = "\033[33m";
+const string MAGENTA = "\033[35m";
 const string ANSI_COLOR_RESET = "\033[0m";
 
 struct Stats {
@@ -122,13 +124,17 @@ public:
     }
 
     void fillInventory() {
-        add(new Item("DSword", "Epic", EquipmentType::WEAPON, {0, 10, 0}));
+        add(new Item("Sword", "Common", EquipmentType::WEAPON, {0, 25, 0}));
         add(new Item("DArmor", "Epic", EquipmentType::ARMOR, {25, 0, 25}));
-        add(new Item("DHelmet", "Epic", EquipmentType::HELMET, {5, 0, 10}));
-        add(new Item("Boots", "Epic", EquipmentType::BOOTS, {3, 0, 7}));
+        add(new Item("DHelmet", "Epic", EquipmentType::HELMET, {15, 0, 15}));
+        add(new Item("Boots", "Rare", EquipmentType::BOOTS, {10, 0, 15}));
         add(new Item("Potion", "Common", EquipmentType::OFFHAND, {10, 0, 0}));
         add(new Item("Torch", "Common", EquipmentType::OFFHAND, {0, 5, 0}));
         add(new Item("Shield", "Rare", EquipmentType::OFFHAND, {0, 0, 15}));
+        add(new Item("DTooth", "Mythic", EquipmentType::OFFHAND, {100, 100, 100}));
+        add(new Item("Oak Bow", "Rare", EquipmentType::WEAPON, {0, 35, 0}));
+        add(new Item("DSpear", "Epic", EquipmentType::WEAPON, {0, 75, 0}));
+        add(new Item("SpecY", "Spec", EquipmentType::OFFHAND, {999, 999, 999}));
     }
 
     int getRows() const {
@@ -145,6 +151,7 @@ class Player {
     Stats totalStats;
     Inventory inventory;
     int gold;
+    int level;
 
 public:
     Player() : totalStats({100, 10, 0}), inventory(5, 5), gold(1000) {
@@ -188,6 +195,14 @@ public:
         return true;
     }
 
+    void practice(){
+        level++;
+        cout << "Congratulations u are now: " << level << endl;
+        totalStats.hp+= 10;
+        totalStats.damage+=5;
+        totalStats.defense+=2;
+    }
+
     Stats getTotalStats() const {
         return totalStats;
     }
@@ -203,6 +218,10 @@ public:
     int getGold() const {
         return gold;
     }
+
+    int getLvl() const{
+        return level;
+    }
 };
 
 class DisplayConsole {
@@ -212,17 +231,21 @@ public:
         for (int i = 0; i < inv->getRows(); i++) {
             for (int j = 0; j < inv->getCols(); j++) {
                 if (inv->getItem(i, j) == nullptr) {
-                    cout << "|-------| ";
+                    cout << "|------| ";
                 } else {
                     const Item* item = inv->getItem(i, j);
                     string itemName = item->name;
                     if (item->rarity == "Rare") {
-                        itemName = ANSI_COLOR_YELLOW + itemName + ANSI_COLOR_RESET;
+                        itemName = YELLOW + itemName + ANSI_COLOR_RESET;
                     } else if (item->rarity == "Epic") {
-                        itemName = ANSI_COLOR_RED + itemName + ANSI_COLOR_RESET;
+                        itemName = RED+ itemName + ANSI_COLOR_RESET;
                     } else if (item->rarity == "Common") {
-                        itemName = ANSI_COLOR_GREEN + itemName + ANSI_COLOR_RESET;
-                    }
+                        itemName = GREEN + itemName + ANSI_COLOR_RESET;
+                    } else if (item->rarity == "Mythic") {
+                        itemName = MAGENTA + itemName + ANSI_COLOR_RESET;
+                    } else if (item->rarity == "Spec") {
+                        itemName = BLACK + itemName + ANSI_COLOR_RESET;
+                }
                     cout << "|" << itemName << "| ";
                 }
             }
@@ -257,12 +280,14 @@ public:
                      << ", Damage: " << player->getEquipment(static_cast<EquipmentType>(i))->stats.damage
                      << ", Defense: " << player->getEquipment(static_cast<EquipmentType>(i))->stats.defense << ")" << endl;
             } else {
-                cout << typeName << ": Empty" << endl;
+                cout << typeName << ": " << endl;
             }
         }
         cout << "Total Stats - HP: " << player->getTotalStats().hp
              << ", Damage: " << player->getTotalStats().damage
              << ", Defense: " << player->getTotalStats().defense << endl;
+
+        cout << "Level: " << player->getLvl() << endl;
 
         cout << "Gold: " << player->getGold() << endl;
     }
@@ -274,13 +299,13 @@ public:
         cout << "3. View inventory\n";
         cout << "4. View equipment\n";
         cout << "5. Exit\n";
+        cout << "6. Practice\n";
     }
 };
 
 int main() {
     Player P;
     P.getInventory()->fillInventory();
-
     DisplayConsole D;
     int choice;
     do {
@@ -325,6 +350,8 @@ int main() {
         case 5:
             cout << "Exiting program." << endl;
             break;
+        case 6:
+            P.practice();
         default:
             cout << "Invalid choice. Please try again." << endl;
             break;
