@@ -296,10 +296,10 @@ public:
         cout << "Menu:\n";
         cout << "1. Equip an item\n";
         cout << "2. Unequip an item\n";
-        cout << "3. View inventory\n";
-        cout << "4. View equipment\n";
-        cout << "5. Exit\n";
-        cout << "6. Practice\n";
+        cout << "3. View the inventory\n";
+        cout << "4. View the equipment\n";
+        cout << "5. Exit the game\n";
+        cout << "6. Practice your skills\n";
     }
 };
 
